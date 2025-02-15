@@ -164,33 +164,42 @@ When we try to make the score as small as possible (minimize the loss), we are l
 
 Let's compare Cross-Entropy Loss with Mean Squared Error (MSE) for better understanding. We know that Mean Squared Error (MSE) and Cross-Entropy Loss both measure the error between the model's predictions, but they do so in fundamentally different ways. MSE does this by measuring the distance between the predicted and true values, treating them as points in space and calculating how far apart they are. On the other hand, Cross-Entropy measures the unlikelihood of the true class by evaluating how much the predicted probability distribution deviates from assigning high probability to the correct class. In essence, while MSE focuses on minimizing the numerical distance between points, Cross-Entropy focuses on reducing the uncertainty and increasing confidence in the true class by penalizing unlikely predictions.
 
-**Cross-Entropy and Maximum Likelihood Estimation (MLE):**<br>
-In machine learning, the cross-entropy loss has a direct connection to maximum likelihood estimation (MLE) in field of statistics. Minimizing the cross-entropy loss is equivalent to maximizing the likelihood of the observed data under the predicted probability distribution.
+**Negative Log-Likelihood (NLL)**:<br>
+Negative Log-Likelihood (NLL) is a broader topic in the field of statistics. It simply measures how well a proballistic model predicts the observed data.
 
-For a single example, Cross-Entropy Loss is calculated as:
+
+For a single example, negative log-likelihood (NLL) is defined as:
 
 $$
-L = -\log(p_\text{true})
+L_{\text{NLL}} = -\log(P(y|x))
 $$
 
 where:
 - $L$ is the loss for a single example.
-- $p_\text{true}$ is the predicted probability for the correct label.
+- $P(y|x)$ is the predicted probability of the correct label (class) $y$ given the input $x$.
+
+![](images/nll_loss.png)
 
 > Note: The above log function is the natural logarithm (base $e$) and not the logarithm with base 10. Usually in math texts, $log(x)$ without specifically indicating the base is considered as the natural logarithm $ln(x)$.
 
-
-For a dataset with many examples, the average loss becomes:
+The NLL for all examples in a dataset is the average of the NLL for each example:
 
 $$
-J = -\frac{1}{m} \sum_{i=1}^m \log(p_{\text{true}}^{(i)})
+J_{\text{NLL}} = -\frac{1}{m} \sum_{i=1}^m \log(P(y^{(i)}|x^{(i)}))
 $$
 where:
 - $J$ is the average loss over all examples.
 - $m$ is the number of examples.
-- $p_{\text{true}}^{(i)}$ is the predicted probability for the correct label of the $i^{th}$ example.
+- $P(y^{(i)}|x^{(i)})$ is the predicted probability of the correct label $y^{(i)}$ given the input $x^{(i)}$.
 
-By minimizing this loss, the model adjusts its predictions to increase the likelihood of the correct labels. This connection exists because minimizing Cross-Entropy Loss is mathematically identical to maximizing the likelihood of the data, which is the goal of MLE. In essence, both approaches aim to make the model's predictions align as closely as possible with the actual data.
+In multiclass classification problems in machine learning where the model outputs a probability distribution over two or more classes by using a sigmoid or softmax activation function, this NLL concept is used to define the Cross-Entropy Loss function.
+
+
+$$
+J_{\text{CE}} = -\frac{1}{m} \sum_{i=1}^m \log(P(y^{(i)}|x^{(i)}))
+$$
+
+Consequently, for multiclass classification, Cross-Entropy Loss is equivalent to the negative log-likelihood of the correct class label. Minimizing this loss directly increases the predicted probability of the true labels, making the model parameters more likely to match the observed data.
 
 ### Binary Cross-Entropy Loss
 Binary Cross-Entropy Loss is a variant of the Cross-Entropy Loss which is commonly used in binary classification problems such as predicting whether an email is spam or not, or whether a tumor is malignant or benign. Here, the output of our model is a probability that the given input point belongs to a certain class.
@@ -336,12 +345,13 @@ Sparse Encoding:
 $$y = 2$$
 
 
-Sparse Categorical Cross-Entropy Loss for $N$ classes is defined as:
+**Sparse Categorical Cross-Entropy** Loss for $N$ classes is defined as:
 
 $$
 \begin{aligned}
   L(\mathbf{\vec{a}},y)=\begin{cases}
-    -log(a_1), & \text{if $y=1$}.\\
+    -log(a_1), & \text{if $y=1$}\\
+    -log(a_2), & \text{if $y=2$}\\
         &\vdots\\
      -log(a_N), & \text{if $y=N$}
   \end{cases}
@@ -350,7 +360,7 @@ $$
 where:
 - $N$ is the number of classes.
 - $y$ is the true class label for the instance.
-- $\mathbf{\vec{a}}$ is the predicted probability vector for the instance. $\vec{\mathbf{a}} = [a_0, a_1, ..., a_{N-1}]$, where $a_i$ is the predicted probability of class $j_{th}$.
+- $\mathbf{\vec{a}}$ is the predicted probability vector for the instance. $\vec{\mathbf{a}} = [a_1, a_2, ..., a_{N}]$, where $a_i$ is the predicted probability of class $j_{th}$.
 
 At anytime, only one of them true (the example can belong to one class), then the loss of class $j$ is:
 
