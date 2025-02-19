@@ -295,11 +295,14 @@ $$
 ### Categorical Cross-Entropy Loss
 The Cross-Entropy Loss function for multi-class classification is commonly referred to as **Categorical Cross-Entropy**.
 
-**Categorical**: This term indicates that the problem at hand is a multi-class classification problem, where the aim is to predict the probability of each category. The target labels are categories (also called classes), typically represented as **one-hot encoded** vectors. In other word, each input example belongs to exactly one class.
+**Categorical**: This term indicates that the problem at hand is a multi-class classification problem, where the aim is to predict the probability of each category. The target labels are categories (also called classes), represented as **one-hot encoded** vectors. A vector with the size of $N$ (number of classes) where the index of the true class is 1 and all other indices are 0. In other word, each input example belongs to exactly one clas
+
 
 For example, if there are $N=5$ classes, a label for "Class 2" is represented as:
 
-$$y = [0, 1, 0, 0, 0]$$
+$$ y = \begin{bmatrix} 0 & 1 & 0 & 0 & 0 \end{bmatrix} $$
+
+
 
 Here, the label is a vector of length $N$ with a 1 at the index corresponding to the class and 0s elsewhere.
 
@@ -338,11 +341,15 @@ Sparse Categorical Cross-Entropy Loss is another version of Cross-Entropy Loss u
 
 **Sparse**: This indicates that the labels are provided as integers, with each integer representing a class. For example, in a 10-class problem (like digit recognition, where classes are 0 to 9), the label for class 2 is simply the integer 2. Sparse representation is more memory-efficient comparing to the 'dense' representation, where each label is a one-hot encoded vector.
 
-One-hot Encoding:
-$$y = [0, 1, 0, 0, 0]$$
+**Sparse Encoding**
+$$ y = \begin{cases}
+    \text{class 1} \Rightarrow y=1\\
+    \text{class 2} \Rightarrow y=2\\
+    \text{class 3} \Rightarrow y=3\\
+    \vdots \\
+    \text{class N} \Rightarrow y= N
+\end{cases}$$
 
-Sparse Encoding:
-$$y = 2$$
 
 
 **Sparse Categorical Cross-Entropy** Loss for $N$ classes is defined as:
@@ -362,7 +369,7 @@ where:
 - $y$ is the true class label for the instance.
 - $\mathbf{\vec{a}}$ is the predicted probability vector for the instance. $\vec{\mathbf{a}} = [a_1, a_2, ..., a_{N}]$, where $a_i$ is the predicted probability of class $j_{th}$.
 
-At anytime, only one of them true (the example can belong to one class), then the loss of class $j$ is:
+At anytime, only one of them true (the example can belong to one class at a time only). So, it means the rest of the lines above are zero. If the true class is $j$
 
 
 $$
@@ -376,7 +383,8 @@ Where:
 
 
 
-We know that only the line that corresponds to the target contributes to the loss, other lines are zero. To write the cost equation we need an **indicator function** that will be 1 when the index matches the target and zero otherwise.
+As we discussed, that only the line that corresponds to the target contributes to the loss, other lines are zero. To write this in math terms we use an _indicator function_ that will be 1 when the index matches the target and zero otherwise.
+
 
 $$\mathbf{1}\{y == n\} =\begin{cases}
 1, & \text{if $y==n$}.\\
@@ -386,16 +394,13 @@ $$\mathbf{1}\{y == n\} =\begin{cases}
 Now the loss is:
 $$
 \begin{aligned}
-L(\mathbf{\vec{a}},y) = - \sum_{j=1}^{N} \left[  1\left\{y^{(i)} == j\right\} \log \frac{e^{z^{(i)}_j}}{\sum_{k=1}^N e^{z^{(i)}_k} }\right]
+L(\mathbf{\vec{a}},y) = - \sum_{j=1}^{N}  1\left\{y == j\right\} \log \frac{e^{z_j}}{\sum_{k=1}^N e^{z_k} }
 \end{aligned}
 $$
 
 Where:
 - $N$ is the number of outputs (classes).
-- $i$ indicates that this is $i$-th example of the training dataset.
 - $j$ is the index of the output element in the vector $\mathbf{\vec{a}}$.
-
-To put this all together, if you're working on a multi-class classification problem with mutually exclusive classes (where each sample belongs to exactly one class), and you have class labels represented as integers, you would use Sparse Categorical Crossentropy as your loss function.
 
 
 > **indicator function:** (denoted here as $\mathbf{1}\{y == n\}$) is a concept that behaves very similarly to the if-else construct in programming. It produces a binary output based on whether a specific condition is met.
@@ -403,48 +408,31 @@ To put this all together, if you're working on a multi-class classification prob
 >In this context, the condition is $y==n$, where $y$ is the target (actual) class and $n$ is the index of the class we're currently considering.
 > The mathematical notation you're seeing is a piecewise function, which is a common way to represent indicator functions. Here's how it works:
 >
->- $\mathbf{1}\{y == n\} = 1$: This line states that the indicator function outputs 1 when the condition $y==n$ is met.
->- $\mathbf{1}\{y == n\} = 0$: This line states that the indicator function outputs 0 when the condition $y==n$ is not met.
+>If $y==n$ then:
+> $$\mathbf{1}\{y == n\} = 1$$
+>If $y \neq n$ then:
+>$$\mathbf{1}\{y == n\} = 0$$
 
 
-### Mutually Exclusive Multi-Class vs. Multi-Label Classification
-**Mutually exclusive multi-class classification** refers to a type of classification problem where each instance belongs to exactly one class out of a predefined set of classes, and no overlap between classes is allowed. For example, in a task to classify images of animals into "cat," "dog," or "bird," each image is assumed to belong to only one of these categories. The model predicts a probability distribution across all classes, with the sum of probabilities equaling 1, ensuring that the instance is assigned to the most probable class.
+**Cost Function**:<br>
+The cost function $J$ is the average loss over all examples in the training set:
 
-**Multi-label classification** is a type of classification problem where each instance can belong to multiple classes simultaneously, rather than being restricted to just one. For example in a model which classify research papers, a model can classify a research paper into multiple relevant fields, such as "Deep Learning," "Natural Language Processing (NLP)," and "Computer Vision."
+$$
+J(W, \vec{\mathbf{b}}) = -\frac{1}{m} \left[ \sum_{i=1}^{m} \sum_{j=1}^{N} 1\{y^{(i)} == j\} \log \frac{e^{z_j^{(i)}}}{\sum_{k=1}^N e^{z_k^{(i)}} } \right]
+$$
 
- A single paper about "transformers applied to image captioning" could be labeled with:
-  - "Deep Learning"
-  - "Natural Language Processing (NLP)"
-  - "Computer Vision"
+Where:
+- $m$ is the number of examples in the batch.
+- $N$ is the number of classes.
+- $y^{(i)}$ is the true class label for the $i^{th}$ instance.
+- $z_j$ is the input to the softmax function for class $j$. It's the logit for the class $j$.
 
-The model would predict independent probabilities for each label:
-  - "Deep Learning: 0.95"
-  - "NLP: 0.88"
-  - "Computer Vision: 0.75"
-  - "Robotics: 0.10"
+To put this all together, if you're working on a multi-class classification problem with mutually exclusive classes (where each sample belongs to exactly one class), and you have class labels represented as integers, you would use Sparse Categorical Crossentropy as your loss function.
 
-Each label is treated **independently**, allowing the model to assign multiple tags to a single instance, which is essential in fields like document classification, multi-topic news categorization, or research paper tagging in online repositories like arXiv.
-
-This means the model outputs a probability for each class, indicating the likelihood that the instance belongs to that class. **Binary Cross-Entropy** is typically used as the loss function for multi-label problems, as it calculates the loss for each class independently, treating the presence or absence of each label as a separate binary classification task.
-
-This is a quick summary:
+### Loss Function Summary
 
 | Loss Function | Use Case | Description |
 | --- | --- | --- |
-| **Categorical Cross-Entropy** | Mutually Exclusive Multi-Class | Used when each instance belongs to exactly one class. |
-| **Sparse Categorical Cross-Entropy** | Mutually Exclusive Multi-Class | Used when true labels are integers representing the class index. |
-| **Binary Cross-Entropy** | Mutually Exclusive Multi-Class (N=2), and Multi-Label Classification | It works for both binary classification (mutually exclusive classes, $N=2$) and multi-label classification by treating each class independently, calculating loss for each output probability separately. |
-
-
-### Implementation of Cross-Entropy In ML Libraries
-
-### TensorFlow
-Tensorflow has multiple variations of cross-entropy. A few of commonly used ones are:
-- `CategoricalCrossEntropy`: (is the same as Cross-Entropy function) expects the target value of an example to be one-hot encoded where the value at the target index is 1 while the other N-1 entries are zero. An example with 10 potential target values, where the target is 2 would be [0,0,1,0,0,0,0,0,0,0].
-- `SparseCategorialCrossentropy`: expects the target to be an integer corresponding to the index. For example, if there are 10 potential target values, y would be between 0 and 9. This is suitable when your classes are mutually exclusive, i.e., each instance belongs to exactly one class.
-- `BinaryCrossEntropy`: Computes the cross-entropy loss between true labels and predicted labels. Used in binary classification tasks where each example belongs to exactly one of two classes.
-
-For example:
-```python
-model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy())
-```
+| **Categorical Cross-Entropy** | Mutually Exclusive Multi-Class | - When each instance belongs to exactly one class <br> - Labels are one-hot encoded vectors. |
+| **Sparse Categorical Cross-Entropy** | Mutually Exclusive Multi-Class | - When each instance belongs to exactly one class <br> - True labels are integers representing the class index. |
+| **Binary Cross-Entropy** | - Mutually Exclusive Binary Class (N=2)<br> -Multi-Label Classification | It works for both binary classification (mutually exclusive classes, $N=2$) and multi-label classification by treating each class independently, calculating loss for each output probability separately and sum (or average) them to get the total loss. |
