@@ -46,6 +46,20 @@ $$
 where:
 - $\theta$ encapsulates $W$ and $B$ (all the learnable parameters of the model).
 
+**Loss Function is a Function of Model Parameters**:<br>
+The model $f_{W, \vec{\mathbf{b}}}$ is a function that maps input features $\mathbf{x}$ to output predictions $\hat{y}$, given the parameters $W$ and $\vec{\mathbf{b}}$.
+
+$$\hat{y} = f_{W, \vec{\mathbf{b}}}(\mathbf{x})$$
+
+However, the Loss function $L$ is a function that maps the model parameters $W$ and $\vec{\mathbf{b}}$ to a single scalar value that quantifies the error between the model's predictions and the true values.
+
+$$L = L(\hat{y}, y)$$
+
+Once the model compute the $\hat{y}$, and having the true value $y$, the loss function is effectively become a function of model's learnable parameters $W$ and $\vec{\mathbf{b}}$. That's why we can denote it as $L(W, \vec{\mathbf{b}})$.
+
+$$L(W, \vec{\mathbf{b}}) = L(f_{W, \vec{\mathbf{b}}}(x), y)$$
+
+
 
 ## Loss and Cost Functions
 
