@@ -478,15 +478,21 @@ To address this challenge, _Adaptive Learning Rate Methods_ have been developed.
 ### Adam (Adaptive Moment Estimation)
 In Adam algorithm, we have **separate** learning rate for each parameter ($w$ and $b$).
 
-Intuitively, when a parameter goes towards a direction, Adam increases the learning rate for that parameter, and when it goes back-and-forth (oscillating), then Adam decreases the learning rate for that parameter.
+Intuitively, when a parameter goes towards the same direction, Adam increases the learning rate for that parameter (to move faster), and when it goes back-and-forth (oscillating), then Adam decreases the learning rate for that parameter (to slow down).
+
+In Adam, we have separate learning rate for each parameter.
 
 $$
 \begin{align*} \text{repeat}&\text{ until convergence: } \lbrace \newline
-& w_j = w_j -  \alpha \frac{\partial J(\vec{\mathbf{w}},b)}{\partial w_j}\newline
-&b\ \ = b -  \alpha \frac{\partial J(\vec{\mathbf{w}},b)}{\partial b}  \newline \rbrace
+& w_1 = w_1 -  \textcolor{red}{\alpha_1} \frac{\partial J(\vec{\mathbf{w}},b)}{\partial w_1}\newline
+& w_2 = w_2 -  \textcolor{red}{\alpha_2} \frac{\partial J(\vec{\mathbf{w}},b)}{\partial w_2}\newline
+& \vdots \newline
+& w_n = w_n -  \textcolor{red}{\alpha_n} \frac{\partial J(\vec{\mathbf{w}},b)}{\partial w_n}\newline
+&b\ \ = b -  \textcolor{red}{\alpha_{n+1}} \frac{\partial J(\vec{\mathbf{w}},b)}{\partial b}  \newline \rbrace
 \end{align*}
 $$
 
+Due to fast convergence and removing the need to guess and manually fine-tune the learning rate, Adam has become one of the most popular and commonly used optimization algorithms in deep learning in comparison to traditional gradient descent. Although we should note, that the Adam still uses all the core principles of gradient descent but with some improvements on top of it to make it more efficient.
 
 ## Practical Problems
 ### Escaping Local Minimas and Saddle Points
