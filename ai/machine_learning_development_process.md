@@ -29,6 +29,7 @@ In the above diagram:
 
 This [article by MLflow](https://mlflow.org/docs/latest/introduction/index.html) also illustrates the iterative nature of the machine learning development process as we discussed above.
 
+> Current advancements in AI models and algorithms, in particular deep learning models, gives us very capable models which can learn from the data and generalize well. However, the current challenge is **data**. So, the current focus of machine learning projects should be more on the data part rather than the algorithms and models and how to engineer them to get the best performance from the models. This is why Data Engineering, EDA and Feature Engineering are becoming more important steps in many machine learning projects.
 
 ### Data Engineering
 See [Data Engineering](data_engineering.md) for more details.
